@@ -1,0 +1,30 @@
+{
+  "name": "Ledger local",
+  "_postman_variable_scope": "environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4020",
+      "enabled": true,
+      "type": "default"
+    },
+    {
+      "key": "owner",
+      "value": "Ada",
+      "enabled": true,
+      "type": "default"
+    },
+    {
+      "key": "deposit",
+      "value": "100",
+      "enabled": true,
+      "type": "default"
+    },
+    {
+      "key": "amount",
+      "value": "40",
+      "enabled": true,
+      "type": "default"
+    }
+  ]
+}

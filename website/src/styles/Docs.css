@@ -1,0 +1,56 @@
+:root {
+  --sl-font: 'Inter Variable', system-ui, sans-serif;
+  --sl-font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --sl-content-width: 46rem;
+}
+
+:root,
+::backdrop {
+  --sl-color-accent-low: #2a2310;
+  --sl-color-accent: #d9a940;
+  --sl-color-accent-high: #f3dca4;
+  --sl-color-white: #f4efe3;
+  --sl-color-gray-1: #e2dccd;
+  --sl-color-gray-2: #bcb7aa;
+  --sl-color-gray-3: #8d93a3;
+  --sl-color-gray-4: #5a6277;
+  --sl-color-gray-5: #2a3350;
+  --sl-color-gray-6: #141c33;
+  --sl-color-black: #0a1020;
+}
+
+:root[data-theme='light'],
+[data-theme='light'] ::backdrop {
+  --sl-color-accent-low: #f4e6c4;
+  --sl-color-accent: #8a6113;
+  --sl-color-accent-high: #4a330a;
+  --sl-color-white: #10182c;
+  --sl-color-gray-1: #1d2539;
+  --sl-color-gray-2: #343c52;
+  --sl-color-gray-3: #555d73;
+  --sl-color-gray-4: #8b91a1;
+  --sl-color-gray-5: #d8d3c6;
+  --sl-color-gray-6: #f1ece0;
+  --sl-color-gray-7: #f8f5ee;
+  --sl-color-black: #fdfbf6;
+}
+
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+h1#_top {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+h1#_top {
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+}
+
+.sl-markdown-content h2 {
+  font-size: 2rem;
+}
+
+.site-title img {
+  border-radius: 7px;
+}

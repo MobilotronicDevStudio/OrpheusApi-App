@@ -1,0 +1,634 @@
+---
+import { Code } from 'astro:components'
+import SiteLayout from '../components/SiteLayout.astro'
+import Screenshot from '../components/Screenshot.astro'
+import DownloadButton from '../components/DownloadButton.astro'
+import { latestRelease } from '../lib/release'
+import { url } from '../lib/site'
+import assistantShot from '../assets/screenshots/Assistant.png'
+import scriptsShot from '../assets/screenshots/Scripts.png'
+import runnerShot from '../assets/screenshots/Runner.png'
+import bodiesShot from '../assets/screenshots/BodyVersions.png'
+
+const release = await latestRelease()
+
+const differences = [
+  {
+    title: 'An assistant that does the work',
+    text: 'It sends requests, runs collections, groups failures and writes tests. Every run waits for your approval, and every change arrives as a diff.',
+    href: '#assistant',
+  },
+  {
+    title: 'Secrets it can never see',
+    text: 'Secrets are redacted before any model sees them, with no switch to turn that off. If a request it influenced would go to a new host, Orpheus stops and asks.',
+    href: 'docs/assistant/safety/',
+  },
+  {
+    title: 'Every case on one request',
+    text: 'Keep named versions of a body, like Happy path and Missing field, and of its scripts, like Smoke and Contract. Pick which one runs.',
+    href: 'docs/guides/body-versions/',
+  },
+  {
+    title: 'Free, all of it',
+    text: 'No paid tier, no account and no feature held back.',
+    href: '#local',
+  },
+]
+
+const assistantPoints = [
+  {
+    title: 'Bring your own model',
+    text: 'Run it locally with Ollama, or use Anthropic, OpenAI or Gemini with your own key. Keys are encrypted by your operating system and never reach the window.',
+  },
+  {
+    title: 'Redacted, always',
+    text: 'Secret variables, credentials, tokens, cookies and sensitive headers are replaced with [REDACTED] before a model sees anything. There is no switch to turn it off.',
+  },
+  {
+    title: 'You approve every run',
+    text: 'Before the assistant sends a request or runs a collection, you see the request, the host and the environment, and you decide.',
+  },
+  {
+    title: 'Changes you can review',
+    text: 'Edits to requests and scripts arrive as a diff you accept or discard, unless you choose Allow all. Deleting a request always asks.',
+  },
+  {
+    title: 'No new destinations',
+    text: 'If something the assistant influenced would send a request to a host you have not used, Orpheus stops and asks first, naming any secret it would carry.',
+  },
+  {
+    title: 'Works from your editor too',
+    text: 'Turn on the local MCP endpoint and drive Orpheus from VS Code, Cursor, Claude Code or any MCP client. Localhost only, behind a token.',
+  },
+]
+
+const features = [
+  {
+    title: 'Versions for bodies and scripts',
+    text: 'Keep Happy path, Missing field and Huge payload as named bodies on one request. Script sets work the same way.',
+    icon: 'M4 6h16M4 12h10M4 18h7',
+  },
+  {
+    title: 'Variables you can see',
+    text: 'Every {{variable}} in the URL is highlighted, and hovering shows the exact value that will be sent.',
+    icon: 'M8 4c-2 0-3 1-3 3v2c0 1.5-1 3-2 3 1 0 2 1.5 2 3v2c0 2 1 3 3 3M16 4c2 0 3 1 3 3v2c0 1.5 1 3 2 3-1 0-2 1.5-2 3v2c0 2-1 3-3 3',
+  },
+  {
+    title: 'Real timing',
+    text: 'DNS, TCP connect, TLS, time to first byte and transfer, measured from socket events rather than one number.',
+    icon: 'M4 18h4V9H4zM10 18h4V5h-4zM16 18h4v-6h-4z',
+  },
+  {
+    title: 'Scripts and tests',
+    text: 'Pre and post-request JavaScript in a sandbox with no network or file access, on its own thread so a slow script never freezes the app.',
+    icon: 'm8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14',
+  },
+  {
+    title: 'Collection runner',
+    text: 'Run serially with variables chaining between requests, or in parallel. Iterations, CSV or JSON data files, HTML reports.',
+    icon: 'M6 4l13 8-13 8z',
+  },
+  {
+    title: 'Bring your collections',
+    text: 'Import Postman v2, v2.1 and v3, OpenAPI 3, Swagger 2 and cURL, as JSON or YAML. Export back to Postman any time.',
+    icon: 'M12 4v11m0 0-4-4m4 4 4-4M5 20h14',
+  },
+  {
+    title: 'Every common auth',
+    text: 'Basic, Bearer, API key, NTLM and OAuth 2.0 with PKCE, inherited from the folder or collection when you want.',
+    icon: 'M7 11V8a5 5 0 0 1 10 0v3M5 11h14v9H5z',
+  },
+  {
+    title: 'Code snippets',
+    text: 'Copy any request as cURL, fetch, axios, Python requests, C# HttpClient, Go or Ruby.',
+    icon: 'M9 7 4 12l5 5M15 7l5 5-5 5',
+  },
+]
+
+const testScript = `orpheus.test('returns 200', () => {
+  orpheus.expect(orpheus.response.status).toBe(200)
+})
+
+orpheus.test('only open orders', () => {
+  for (const order of orpheus.response.data.items) {
+    orpheus.expect(order.status).toBe('open')
+  }
+})
+
+// Hand the first id to the next request in the run
+orpheus.variables.set('orderId', orpheus.response.data.items[0].id)`
+---
+
+<SiteLayout
+  title="Orpheus API: an API client with an assistant that does the work and never sees your secrets"
+  description="Orpheus is a free API client for Windows, macOS and Linux. Its assistant runs requests and collections through redacted, approved tools, and requests keep versions of their bodies and scripts. No paid tier, no account."
+>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-copy">
+        <p class="eyebrow">Desktop API client for Windows, macOS and Linux</p>
+        <h1 class="display">An API client whose assistant <em>does the work</em> and never sees your secrets.</h1>
+        <p class="lead">
+          Orpheus sends requests, keeps versions of their bodies and scripts, and runs whole collections.
+          Its assistant runs them for you, explains what failed and writes the tests. Every secret is redacted,
+          every run waits for you, and nothing goes to a host you haven't used.
+        </p>
+        <div class="cta">
+          <DownloadButton release={release} />
+          <a class="button button-secondary" href={url('docs/getting-started/install/')}>Read the docs</a>
+        </div>
+        <p class="meta">
+          {release.version ? `Version ${release.version}` : 'Alpha'} · Free, with no paid tier · No account
+        </p>
+      </div>
+      <Screenshot
+        class="hero-shot"
+        src={assistantShot}
+        alt="Orpheus with a request open and the assistant, running on a local model, grouping the failed requests from a collection run"
+        eager
+      />
+    </div>
+  </section>
+
+  <section id="different" class="different">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Why Orpheus</p>
+        <h2 class="display">Help that acts, <em>keys that stay yours</em>.</h2>
+      </div>
+      <div class="points pillars">
+        {differences.map((point, i) => (
+          <a class="point" href={point.href.startsWith('#') ? point.href : url(point.href)}>
+            <span class="index">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{point.title}</h3>
+            <p>{point.text}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="assistant" class="assistant">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">The assistant</p>
+        <h2 class="display">Ask about your API. <em>Keep the keys.</em></h2>
+        <p class="lead">
+          The assistant uses the same tools you do. It can list your collections, read a response, run a
+          request or a folder, and propose changes to requests and scripts. Every result passes through a
+          sanitizer before it leaves the app.
+        </p>
+      </div>
+      <div class="points">
+        {assistantPoints.map((point, i) => (
+          <article class="point">
+            <span class="index">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{point.title}</h3>
+            <p>{point.text}</p>
+          </article>
+        ))}
+      </div>
+      <p class="more"><a href={url('docs/assistant/safety/')}>How the redaction and approvals work →</a></p>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">The client</p>
+        <h2 class="display">Everything you expect, <em>done carefully</em>.</h2>
+        <p class="lead">
+          Built for people who test the same endpoint a dozen different ways, and want to see exactly what was sent.
+        </p>
+      </div>
+      <div class="grid">
+        {features.map(feature => (
+          <article class="card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d={feature.icon} /></svg>
+            <h3>{feature.title}</h3>
+            <p>{feature.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase">
+    <div class="container rows">
+      <div class="row">
+        <div class="row-copy">
+          <p class="eyebrow">Scripts and tests</p>
+          <h2 class="display">Tests that read like <em>what they check</em>.</h2>
+          <p class="lead">
+            Write checks with <code>orpheus.test</code> and <code>orpheus.expect</code>, validate a response
+            against a JSON Schema, and pass values to the next request. The editor completes the whole API as you type.
+          </p>
+          <a class="link" href={url('docs/guides/scripts/')}>Scripts and tests guide →</a>
+        </div>
+        <div class="code">
+          <Code code={testScript} lang="js" theme="css-variables" />
+        </div>
+      </div>
+
+      <Screenshot src={scriptsShot} alt="A post-request script, its two passing tests on the response's Tests tab, and the timing waterfall in the console below" />
+
+      <div class="row reverse">
+        <div class="row-copy">
+          <p class="eyebrow">Collection runner</p>
+          <h2 class="display">Run the whole thing, <em>then ask why</em>.</h2>
+          <p class="lead">
+            Run a collection or a folder, serially or in parallel, with iterations and data files. When something
+            fails, hand the run to the assistant and get the failures grouped with a likely cause.
+          </p>
+          <a class="link" href={url('docs/guides/runner/')}>Collection runner guide →</a>
+        </div>
+        <Screenshot src={runnerShot} alt="The collection runner with seven passed and two failed requests" chrome={false} sizes="(max-width: 1000px) 100vw, 680px" />
+      </div>
+
+      <div class="row">
+        <div class="row-copy">
+          <p class="eyebrow">Body versions</p>
+          <h2 class="display">One request, <em>every case</em>.</h2>
+          <p class="lead">
+            Keep the happy path and the edge cases side by side on the same request, and switch between them from
+            a dropdown instead of commenting JSON in and out.
+          </p>
+          <a class="link" href={url('docs/guides/body-versions/')}>Body versions guide →</a>
+        </div>
+        <Screenshot src={bodiesShot} alt="The body version picker on a Create order request showing three named bodies" chrome={false} sizes="(max-width: 1000px) 100vw, 680px" />
+      </div>
+    </div>
+  </section>
+
+  <section id="local" class="local">
+    <div class="container local-grid">
+      <div>
+        <p class="eyebrow">Local first</p>
+        <h2 class="display">Your files. <em>Your machine.</em></h2>
+      </div>
+      <ul>
+        <li><strong>No account, no cloud sync.</strong> Orpheus runs entirely on your computer.</li>
+        <li><strong>Plain files.</strong> Collections and environments are JSON you can keep in git.</li>
+        <li><strong>Requests go out from the app.</strong> Not through a proxy, which is what makes NTLM and per-request TLS settings work.</li>
+        <li><strong>Free, all of it.</strong> No paid tier and nothing held back for one.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="download" class="download">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Download</p>
+        <h2 class="display">Get Orpheus.</h2>
+        <p class="lead">
+          {release.version ? `Version ${release.version}.` : 'Alpha builds.'} Installers are not signed yet, so your
+          system will ask you to confirm the first time you open it.
+        </p>
+      </div>
+      <div class="platforms">
+        <a class="platform" href={release.downloads.windows}>
+          <h3>Windows</h3>
+          <p>Installer for Windows 10 and 11, x64.</p>
+          <span>If SmartScreen appears, choose More info, then Run anyway.</span>
+        </a>
+        <a class="platform" href={release.downloads.mac}>
+          <h3>macOS</h3>
+          <p>Disk image for Apple Silicon and Intel Macs.</p>
+          <span>The first time, right-click the app and choose Open.</span>
+        </a>
+        <a class="platform" href={release.downloads.linux}>
+          <h3>Linux</h3>
+          <p>AppImage, x86_64.</p>
+          <span>Make it executable with <code>chmod +x</code>, then run it.</span>
+        </a>
+      </div>
+      <p class="more">
+        <a href={release.pageUrl}>All releases and release notes →</a>
+      </p>
+    </div>
+  </section>
+</SiteLayout>
+
+<style>
+  .hero {
+    padding-top: clamp(56px, 9vw, 104px);
+    padding-bottom: clamp(56px, 8vw, 96px);
+    background:
+      radial-gradient(60% 50% at 50% 0%, color-mix(in srgb, var(--gold) 14%, transparent), transparent 70%),
+      var(--bg);
+  }
+
+  .hero-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 860px;
+    margin: 0 auto clamp(48px, 7vw, 80px);
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(44px, 7.2vw, 84px);
+    margin-bottom: 24px;
+  }
+
+  .hero .lead {
+    max-width: 660px;
+  }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 34px;
+  }
+
+  .meta {
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .points {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+  }
+
+  .point {
+    padding: 30px 28px 34px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .different {
+    border-top: 1px solid var(--border);
+  }
+
+  .points.pillars {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  a.point {
+    color: inherit;
+    text-decoration: none;
+    transition: background-color 0.15s;
+  }
+
+  a.point:hover {
+    background: var(--bg-soft);
+  }
+
+  a.point:hover h3 {
+    color: var(--accent);
+  }
+
+  .index {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+
+  h3 {
+    margin: 12px 0 8px;
+    font-size: 18px;
+    font-weight: 620;
+    letter-spacing: -0.01em;
+  }
+
+  .point p,
+  .card p {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 15px;
+  }
+
+  .more {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    margin: 32px 0 0;
+  }
+
+  .more a,
+  .link {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .more a:hover,
+  .link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .features {
+    background: var(--bg-soft);
+    border-block: 1px solid var(--border);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .card {
+    padding: 26px 24px 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .card svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .rows {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(64px, 9vw, 120px);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+  }
+
+  .row > * {
+    min-width: 0;
+  }
+
+  .row.reverse {
+    grid-template-columns: 7fr 5fr;
+  }
+
+  .row.reverse > :first-child {
+    order: 2;
+  }
+
+  .row h2 {
+    font-size: clamp(34px, 4vw, 46px);
+    margin-bottom: 16px;
+  }
+
+  .row .lead {
+    margin-bottom: 22px;
+  }
+
+  .row-copy code,
+  .platform code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--accent-bg);
+  }
+
+  .code {
+    --astro-code-foreground: #e6e1d3;
+    --astro-code-background: var(--code-bg);
+    --astro-code-token-keyword: #e3b65a;
+    --astro-code-token-string: #9fd3a8;
+    --astro-code-token-string-expression: #9fd3a8;
+    --astro-code-token-constant: #f0a37a;
+    --astro-code-token-function: #8fbcf2;
+    --astro-code-token-parameter: #e6e1d3;
+    --astro-code-token-punctuation: #8d93a3;
+    --astro-code-token-comment: #6f7890;
+    --astro-code-token-link: #8fbcf2;
+  }
+
+  .code :global(pre) {
+    margin: 0;
+    padding: 26px 28px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--code-bg) !important;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: auto;
+    box-shadow: var(--shadow);
+  }
+
+  .local {
+    background: var(--navy);
+    color: #f1ecdf;
+  }
+
+  .local .eyebrow,
+  .local em {
+    color: var(--gold);
+  }
+
+  .local-grid {
+    display: grid;
+    grid-template-columns: 5fr 7fr;
+    gap: clamp(32px, 6vw, 80px);
+    align-items: start;
+  }
+
+  .local h2 {
+    font-size: clamp(40px, 5vw, 60px);
+  }
+
+  .local ul {
+    display: grid;
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 17px;
+    color: #c9c6bd;
+  }
+
+  .local li {
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgb(255 255 255 / 10%);
+  }
+
+  .local strong {
+    color: #f1ecdf;
+    font-weight: 600;
+  }
+
+  .platforms {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .platform {
+    display: block;
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    text-decoration: none;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .platform:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .platform h3 {
+    margin-top: 0;
+    font-family: var(--font-serif);
+    font-size: 30px;
+    font-weight: 400;
+  }
+
+  .platform p {
+    margin: 0 0 14px;
+    color: var(--text-soft);
+  }
+
+  .platform span {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  @media (max-width: 1000px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .points,
+    .points.pillars {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .row,
+    .row.reverse,
+    .local-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .row.reverse > :first-child {
+      order: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .grid,
+    .points,
+    .points.pillars,
+    .platforms {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

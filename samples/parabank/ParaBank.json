@@ -1,0 +1,481 @@
+{
+  "SchemaVersion": "1.0.0",
+  "Id": "col_parabank",
+  "Name": "ParaBank",
+  "Description": "Parasoft's demo bank, run locally in Docker. See samples/parabank/README.md.",
+  "Variables": {},
+  "Auth": {
+    "type": "None"
+  },
+  "Requests": [
+    {
+      "Id": "parabank-initialize",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/initializeDB",
+      "Verb": "POST",
+      "Name": "Initialize database",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 204', () => orpheus.expect(orpheus.response.status).toBe(204))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "parabank-login",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/login/{{username}}/{{password}}",
+      "Verb": "GET",
+      "Name": "Log in",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))\norpheus.variables.set('customerId', String(orpheus.response.data.id))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "parabank-list-accounts",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/customers/{{customerId}}/accounts",
+      "Verb": "GET",
+      "Name": "List accounts",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))\n\nconst accounts = orpheus.response.data\norpheus.variables.set('fromAccountId', String(accounts[0].id))\norpheus.variables.set('toAccountId', String(accounts[1].id))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "parabank-get-account",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/accounts/{{fromAccountId}}",
+      "Verb": "GET",
+      "Name": "Get account",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "parabank-transfer",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/transfer",
+      "Verb": "POST",
+      "Name": "Transfer",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {
+          "fromAccountId": "{{fromAccountId}}",
+          "toAccountId": "{{toAccountId}}",
+          "amount": "{{amount}}"
+        }
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "parabank-deposit",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/deposit",
+      "Verb": "POST",
+      "Name": "Deposit",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {
+          "accountId": "{{toAccountId}}",
+          "amount": "{{amount}}"
+        }
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "parabank-withdraw",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/withdraw",
+      "Verb": "POST",
+      "Name": "Withdraw",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {
+          "accountId": "{{fromAccountId}}",
+          "amount": "{{amount}}"
+        }
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "parabank-open-account",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/createAccount",
+      "Verb": "POST",
+      "Name": "Open account",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))\norpheus.variables.set('accountId', String(orpheus.response.data.id))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {
+          "customerId": "{{customerId}}",
+          "newAccountType": "0",
+          "fromAccountId": "{{fromAccountId}}"
+        }
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "parabank-transactions",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/accounts/{{fromAccountId}}/transactions",
+      "Verb": "GET",
+      "Name": "List transactions",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    }
+  ],
+  "Folders": [],
+  "InvariantSuites": [
+    {
+      "Id": "parabank-suite-money",
+      "Name": "Money",
+      "Description": "Moves money around John's accounts in random ways, and checks the bank stays readable and keeps its sums.",
+      "Setup": [
+        {
+          "Id": "parabank-setup-initialize",
+          "RequestId": "parabank-initialize",
+          "Name": "Initialize database"
+        },
+        {
+          "Id": "parabank-setup-login",
+          "RequestId": "parabank-login",
+          "Name": "Log in"
+        },
+        {
+          "Id": "parabank-setup-accounts",
+          "RequestId": "parabank-list-accounts",
+          "Name": "List accounts"
+        }
+      ],
+      "Actions": [
+        {
+          "Id": "parabank-action-transfer",
+          "RequestId": "parabank-transfer",
+          "Name": "Transfer",
+          "Weight": 4
+        },
+        {
+          "Id": "parabank-action-deposit",
+          "RequestId": "parabank-deposit",
+          "Name": "Deposit",
+          "Weight": 1
+        },
+        {
+          "Id": "parabank-action-withdraw",
+          "RequestId": "parabank-withdraw",
+          "Name": "Withdraw",
+          "Weight": 1
+        },
+        {
+          "Id": "parabank-action-open",
+          "RequestId": "parabank-open-account",
+          "Name": "Open account",
+          "Weight": 1
+        },
+        {
+          "Id": "parabank-action-get",
+          "RequestId": "parabank-get-account",
+          "Name": "Get account",
+          "Weight": 1
+        }
+      ],
+      "Pools": [
+        {
+          "Name": "accounts",
+          "Variables": [
+            "fromAccountId",
+            "toAccountId",
+            "accountId"
+          ]
+        }
+      ],
+      "Inputs": [
+        {
+          "Name": "amount",
+          "Generator": {
+            "Kind": "decimal",
+            "Min": 0.01,
+            "Max": 500,
+            "Places": 2
+          }
+        },
+        {
+          "Name": "fromAccountId",
+          "Generator": {
+            "Kind": "fromPool",
+            "Pool": "accounts"
+          }
+        },
+        {
+          "Name": "toAccountId",
+          "Generator": {
+            "Kind": "fromPool",
+            "Pool": "accounts"
+          }
+        }
+      ],
+      "Rules": [
+        {
+          "Id": "parabank-rule-money",
+          "Name": "money only changes with deposits and withdrawals",
+          "Reads": [
+            {
+              "Id": "parabank-probe-accounts",
+              "RequestId": "parabank-list-accounts",
+              "Name": "List accounts"
+            }
+          ],
+          "Code": "// Transfers and new accounts move money around; only deposits and withdrawals change the total.\nconst cents = value => Math.round(Number(value) * 100)\nconst step = orpheus.step\nconst total = orpheus.probes['List accounts'].data.reduce((sum, account) => sum + cents(account.balance), 0)\nconst done = step.response.status === 200\nconst change = !done ? 0\n  : step.action === 'Deposit' ? cents(step.inputs.amount)\n  : step.action === 'Withdraw' ? -cents(step.inputs.amount)\n  : 0\nif (orpheus.model.total !== undefined) orpheus.expect(total).toBe(orpheus.model.total + change)\norpheus.model.total = total"
+        }
+      ],
+      "NoServerErrors": true,
+      "Settings": {
+        "Preset": "quick",
+        "Budget": 500,
+        "StepsPerSequence": 20
+      }
+    }
+  ],
+  "ExecutionPlans": [
+    {
+      "Id": "parabank-plan-happy-path",
+      "Name": "Happy path",
+      "Steps": [
+        {
+          "Id": "parabank-step-1",
+          "Enabled": true,
+          "Repeat": 1,
+          "Name": "Initialize database",
+          "Kind": "request",
+          "RequestId": "parabank-initialize"
+        },
+        {
+          "Id": "parabank-step-2",
+          "Enabled": true,
+          "Repeat": 1,
+          "Name": "Log in",
+          "Kind": "request",
+          "RequestId": "parabank-login"
+        },
+        {
+          "Id": "parabank-step-3",
+          "Enabled": true,
+          "Repeat": 1,
+          "Name": "List accounts",
+          "Kind": "request",
+          "RequestId": "parabank-list-accounts"
+        },
+        {
+          "Id": "parabank-step-4",
+          "Enabled": true,
+          "Repeat": 1,
+          "Name": "Transfer",
+          "Kind": "request",
+          "RequestId": "parabank-transfer"
+        },
+        {
+          "Id": "parabank-step-5",
+          "Enabled": true,
+          "Repeat": 1,
+          "Name": "Get account",
+          "Kind": "request",
+          "RequestId": "parabank-get-account"
+        }
+      ],
+      "Settings": {
+        "Mode": "serial",
+        "Concurrency": 5,
+        "Iterations": 1,
+        "StopOnFirstFailure": true,
+        "DelayMs": 0
+      }
+    }
+  ]
+}

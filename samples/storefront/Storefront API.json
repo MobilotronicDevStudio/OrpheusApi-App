@@ -1,0 +1,458 @@
+{
+  "SchemaVersion": "1.0.0",
+  "Id": "col_storefront",
+  "Name": "Storefront API",
+  "Description": "Orders, customers and checkout for the storefront.",
+  "Variables": {
+    "apiVersion": "v1"
+  },
+  "Auth": {
+    "type": "Bearer",
+    "token": {
+      "variableName": "token"
+    }
+  },
+  "Requests": [
+    {
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/health",
+      "Verb": "GET",
+      "Name": "Health check",
+      "Description": "",
+      "Script": [],
+      "SelectedScriptVersion": "",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    }
+  ],
+  "Folders": [
+    {
+      "Name": "Orders",
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Requests": [
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/{{apiVersion}}/orders",
+          "Verb": "GET",
+          "Name": "List open orders",
+          "Description": "",
+          "Script": [
+            {
+              "name": "Smoke",
+              "preRequestScript": "",
+              "postRequestScript": "orpheus.test('returns 200', () => {\n  orpheus.expect(orpheus.response.status).toBe(200)\n})\n\norpheus.test('only open orders', () => {\n  for (const order of orpheus.response.data.items) {\n    orpheus.expect(order.status).toBe('open')\n  }\n})\n\norpheus.variables.set('orderId', orpheus.response.data.items[0].id)"
+            },
+            {
+              "name": "Contract",
+              "preRequestScript": "orpheus.request.headers['X-Request-Id'] = String(Date.now())",
+              "postRequestScript": "const schema = {\n  type: 'object',\n  required: ['items', 'total'],\n  properties: {\n    total: { type: 'integer' },\n    items: { type: 'array', items: { type: 'object', required: ['id', 'status', 'total'] } },\n  },\n}\n\norpheus.test('matches the contract', () => {\n  orpheus.expect(orpheus.response.data).toMatchSchema(schema)\n})"
+            }
+          ],
+          "SelectedScriptVersion": "Smoke",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {
+              "status": "open",
+              "limit": "{{pageSize}}"
+            }
+          },
+          "SelectedBodyVersion": ""
+        },
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/{{apiVersion}}/orders/{{orderId}}",
+          "Verb": "GET",
+          "Name": "Get order",
+          "Description": "",
+          "Script": [],
+          "SelectedScriptVersion": "",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        },
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/{{apiVersion}}/orders",
+          "Verb": "POST",
+          "Name": "Create order",
+          "Description": "",
+          "Script": [
+            {
+              "name": "Default",
+              "preRequestScript": "",
+              "postRequestScript": "orpheus.test('created', () => orpheus.expect(orpheus.response.status).toBe(201))"
+            }
+          ],
+          "SelectedScriptVersion": "Default",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "Body": {
+            "items": {
+              "Happy path": {
+                "items": {
+                  "type": "JSON",
+                  "content": "{\n  \"customerId\": \"cus_2817\",\n  \"currency\": \"EUR\",\n  \"items\": [\n    {\n      \"sku\": \"LYRE-01\",\n      \"quantity\": 1\n    },\n    {\n      \"sku\": \"STRING-SET\",\n      \"quantity\": 2\n    }\n  ]\n}"
+                }
+              },
+              "Missing customer": {
+                "items": {
+                  "type": "JSON",
+                  "content": "{\n  \"currency\": \"EUR\",\n  \"items\": [\n    {\n      \"sku\": \"LYRE-01\",\n      \"quantity\": 1\n    }\n  ]\n}"
+                }
+              },
+              "Unknown SKU": {
+                "items": {
+                  "type": "JSON",
+                  "content": "{\n  \"customerId\": \"cus_2817\",\n  \"currency\": \"EUR\",\n  \"items\": [\n    {\n      \"sku\": \"NOPE-404\",\n      \"quantity\": 1\n    }\n  ]\n}"
+                }
+              }
+            }
+          },
+          "SelectedBodyVersion": "Happy path"
+        },
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/{{apiVersion}}/orders/{{orderId}}",
+          "Verb": "DELETE",
+          "Name": "Cancel order",
+          "Description": "",
+          "Script": [],
+          "SelectedScriptVersion": "",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        }
+      ],
+      "Folders": []
+    },
+    {
+      "Name": "Customers",
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Requests": [
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/{{apiVersion}}/customers/{{customerId}}",
+          "Verb": "GET",
+          "Name": "Get customer",
+          "Description": "",
+          "Script": [],
+          "SelectedScriptVersion": "",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        },
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/{{apiVersion}}/customers/{{customerId}}",
+          "Verb": "PATCH",
+          "Name": "Update customer",
+          "Description": "",
+          "Script": [],
+          "SelectedScriptVersion": "",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "Body": {
+            "items": {
+              "Default": {
+                "items": {
+                  "type": "JSON",
+                  "content": "{\n  \"email\": \"ada@example.com\"\n}"
+                }
+              }
+            }
+          },
+          "SelectedBodyVersion": "Default"
+        }
+      ],
+      "Folders": []
+    },
+    {
+      "Name": "Checkout",
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Requests": [
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/{{apiVersion}}/checkout/quote",
+          "Verb": "POST",
+          "Name": "Quote shipping",
+          "Description": "",
+          "Script": [],
+          "SelectedScriptVersion": "",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        },
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/{{apiVersion}}/checkout/confirm",
+          "Verb": "POST",
+          "Name": "Confirm payment",
+          "Description": "",
+          "Script": [],
+          "SelectedScriptVersion": "",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        }
+      ],
+      "Folders": []
+    },
+    {
+      "Name": "Worker checks",
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Folders": [],
+      "Requests": [
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/health",
+          "Verb": "GET",
+          "Name": "Slow script (5 s)",
+          "Description": "",
+          "Script": [
+            {
+              "name": "Default",
+              "preRequestScript": "// Keeps the script busy for 5 seconds. The app should stay responsive.\nconst until = Date.now() + 5000\nwhile (Date.now() < until) {}",
+              "postRequestScript": "orpheus.test(\"healthy\", () => orpheus.expect(orpheus.response.data.status).toBe(\"ok\"))"
+            }
+          ],
+          "SelectedScriptVersion": "Default",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        },
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/health",
+          "Verb": "GET",
+          "Name": "Saves a variable",
+          "Description": "",
+          "Script": [
+            {
+              "name": "Default",
+              "preRequestScript": "",
+              "postRequestScript": "orpheus.test(\"healthy\", () => orpheus.expect(orpheus.response.data.status).toBe(\"ok\"))\n\n// After the run, the Local environment should have this value.\norpheus.environment.set(\"lastHealthCheck\", new Date().toISOString())"
+            }
+          ],
+          "SelectedScriptVersion": "Default",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        },
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/health",
+          "Verb": "GET",
+          "Name": "Endless loop",
+          "Description": "",
+          "Script": [
+            {
+              "name": "Default",
+              "preRequestScript": "// Should fail with: The script was stopped after 10 seconds.\nwhile (true) {}",
+              "postRequestScript": ""
+            }
+          ],
+          "SelectedScriptVersion": "Default",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        },
+        {
+          "VerifySSL": true,
+          "TimeoutMs": 0,
+          "URL": "{{baseUrl}}/health",
+          "Verb": "GET",
+          "Name": "Out of memory",
+          "Description": "",
+          "Script": [
+            {
+              "name": "Default",
+              "preRequestScript": "// Should fail with: The script ran out of memory.\nconst parts = []\nwhile (true) parts.push(\"x\".repeat(1 << 20) + parts.length)",
+              "postRequestScript": ""
+            }
+          ],
+          "SelectedScriptVersion": "Default",
+          "Variables": {
+            "items": {}
+          },
+          "Auth": {
+            "type": "Inherit"
+          },
+          "Headers": {
+            "items": {
+              "Accept": "application/json"
+            }
+          },
+          "QueryParams": {
+            "items": {}
+          },
+          "SelectedBodyVersion": ""
+        }
+      ]
+    }
+  ]
+}

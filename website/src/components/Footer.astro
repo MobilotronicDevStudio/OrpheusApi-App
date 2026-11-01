@@ -1,0 +1,50 @@
+---
+import { ISSUES_URL, RELEASES_URL, REPO_URL, url } from '../lib/site'
+---
+
+<footer class="footer">
+  <div class="container row">
+    <p>Orpheus API. Free to use.</p>
+    <nav aria-label="Footer">
+      <a href={url('docs/getting-started/install/')}>Docs</a>
+      <a href={RELEASES_URL}>Releases</a>
+      <a href={ISSUES_URL}>Report an issue</a>
+      <a href={REPO_URL}>GitHub</a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--border);
+    padding-block: 36px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--text);
+  }
+</style>

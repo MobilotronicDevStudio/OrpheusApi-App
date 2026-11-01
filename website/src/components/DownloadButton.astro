@@ -1,0 +1,31 @@
+---
+import type { Release } from '../lib/release'
+
+interface Props {
+  release: Release
+}
+
+const { release } = Astro.props
+---
+
+<a
+  class="button button-primary download"
+  href={release.downloads.windows}
+  data-windows={release.downloads.windows}
+  data-mac={release.downloads.mac}
+  data-linux={release.downloads.linux}
+>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" /></svg>
+  <span>Download for <span class="os">Windows</span></span>
+</a>
+
+<script>
+  const names = { windows: 'Windows', mac: 'macOS', linux: 'Linux' } as const
+  const agent = navigator.userAgent
+  const platform = /Mac/.test(agent) ? 'mac' : /Linux|X11/.test(agent) && !/Android/.test(agent) ? 'linux' : 'windows'
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('a.download')) {
+    link.href = link.dataset[platform] ?? link.href
+    const os = link.querySelector('.os')
+    if (os) os.textContent = names[platform]
+  }
+</script>

@@ -11,8 +11,8 @@
 </p>
 
 <p align="center">
-  <a href="https://mobilotronicdevstudio.github.io/OrpheusApi/">Website</a> ·
-  <a href="https://mobilotronicdevstudio.github.io/OrpheusApi/docs/getting-started/install/">Docs</a> ·
+  <a href="https://mobilotronicdevstudio.github.io/OrpheusApi-App/">Website</a> ·
+  <a href="https://mobilotronicdevstudio.github.io/OrpheusApi-App/docs/getting-started/install/">Docs</a> ·
   <a href="https://github.com/MobilotronicDevStudio/OrpheusApi-App/releases">Download</a>
 </p>
 
@@ -39,7 +39,7 @@
 - Import from Postman, OpenAPI, Swagger and cURL, and export back to Postman
 - Code snippets for cURL, fetch, axios, Python, C#, Go and Ruby
 
-Orpheus is in alpha. See the [known limitations](https://mobilotronicdevstudio.github.io/OrpheusApi/docs/reference/limitations/) before you rely on it.
+Orpheus is in alpha. See the [known limitations](https://mobilotronicdevstudio.github.io/OrpheusApi-App/docs/reference/limitations/) before you rely on it.
 
 ## Download
 
@@ -53,7 +53,7 @@ Get it from the [releases page](https://github.com/MobilotronicDevStudio/Orpheus
 | Linux | `OrpheusApi-<version>-linux-x86_64.AppImage` |
 | Command line | `orpheus-cli-<version>-<system>-<arch>` |
 
-The builds are not signed yet, so your system asks you to confirm the first launch. The [install guide](https://mobilotronicdevstudio.github.io/OrpheusApi/docs/getting-started/install/) walks through it.
+The builds are not signed yet, so your system asks you to confirm the first launch. The [install guide](https://mobilotronicdevstudio.github.io/OrpheusApi-App/docs/getting-started/install/) walks through it.
 
 ## Feedback
 

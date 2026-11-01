@@ -1,0 +1,451 @@
+{
+  "SchemaVersion": "1.0.0",
+  "Id": "col_ledger",
+  "Name": "Ledger API",
+  "Description": "Accounts and transfers, with bugs planted on purpose. See samples/ledger/README.md.",
+  "Variables": {},
+  "Auth": {
+    "type": "None"
+  },
+  "Requests": [
+    {
+      "Id": "ledger-reset",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/reset",
+      "Verb": "POST",
+      "Name": "Reset",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))\norpheus.variables.set('accountIds', '[]')"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "ledger-open-account",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/accounts",
+      "Verb": "POST",
+      "Name": "Open account",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 201', () => orpheus.expect(orpheus.response.status).toBe(201))\n\n// Remembers every account opened, so a transfer goes from the first to the last.\nconst ids = JSON.parse(orpheus.variables.get('accountIds') ?? '[]')\nids.push(orpheus.response.data.id)\norpheus.variables.set('accountIds', JSON.stringify(ids))\norpheus.variables.set('accountId', orpheus.response.data.id)\norpheus.variables.set('fromAccount', ids[0])\norpheus.variables.set('toAccount', ids[ids.length - 1])"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "Body": {
+        "items": {
+          "Default": {
+            "items": {
+              "type": "JSON",
+              "content": "{\n  \"owner\": \"{{owner}}\",\n  \"deposit\": {{deposit}}\n}"
+            }
+          }
+        }
+      },
+      "SelectedBodyVersion": "Default"
+    },
+    {
+      "Id": "ledger-list-accounts",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/accounts",
+      "Verb": "GET",
+      "Name": "List accounts",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))\n\norpheus.test('no balance is negative', () => {\n  for (const account of orpheus.response.data.items) {\n    orpheus.expect(account.balance).not.toBeLessThan(0)\n  }\n})"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "ledger-get-account",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/accounts/{{accountId}}",
+      "Verb": "GET",
+      "Name": "Get account",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "ledger-transfer",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/transfers",
+      "Verb": "POST",
+      "Name": "Transfer",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 201', () => orpheus.expect(orpheus.response.status).toBe(201))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "Body": {
+        "items": {
+          "Default": {
+            "items": {
+              "type": "JSON",
+              "content": "{\n  \"from\": \"{{fromAccount}}\",\n  \"to\": \"{{toAccount}}\",\n  \"amount\": {{amount}}\n}"
+            }
+          }
+        }
+      },
+      "SelectedBodyVersion": "Default"
+    },
+    {
+      "Id": "ledger-close-account",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/accounts/{{accountId}}/close",
+      "Verb": "POST",
+      "Name": "Close account",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    },
+    {
+      "Id": "ledger-list-transfers",
+      "VerifySSL": true,
+      "TimeoutMs": 0,
+      "URL": "{{baseUrl}}/transfers",
+      "Verb": "GET",
+      "Name": "List transfers",
+      "Description": "",
+      "Script": [
+        {
+          "name": "Default",
+          "preRequestScript": "",
+          "postRequestScript": "orpheus.test('returns 200', () => orpheus.expect(orpheus.response.status).toBe(200))"
+        }
+      ],
+      "SelectedScriptVersion": "Default",
+      "Variables": {
+        "items": {}
+      },
+      "Auth": {
+        "type": "Inherit"
+      },
+      "Headers": {
+        "items": {
+          "Accept": "application/json"
+        }
+      },
+      "QueryParams": {
+        "items": {}
+      },
+      "SelectedBodyVersion": ""
+    }
+  ],
+  "Folders": [],
+  "InvariantSuites": [
+    {
+      "Id": "ledger-suite-money",
+      "Name": "Money",
+      "Description": "Opens accounts, moves money between them and closes them, in random order, and checks that no money appears or disappears.",
+      "Setup": [
+        {
+          "Id": "ledger-setup-reset",
+          "RequestId": "ledger-reset",
+          "Name": "Reset"
+        }
+      ],
+      "Actions": [
+        {
+          "Id": "ledger-action-open",
+          "RequestId": "ledger-open-account",
+          "Name": "Open account",
+          "Weight": 2
+        },
+        {
+          "Id": "ledger-action-transfer",
+          "RequestId": "ledger-transfer",
+          "Name": "Transfer",
+          "Weight": 4
+        },
+        {
+          "Id": "ledger-action-close",
+          "RequestId": "ledger-close-account",
+          "Name": "Close account",
+          "Weight": 1
+        },
+        {
+          "Id": "ledger-action-get",
+          "RequestId": "ledger-get-account",
+          "Name": "Get account",
+          "Weight": 1
+        }
+      ],
+      "Pools": [
+        {
+          "Name": "accounts",
+          "Variables": [
+            "accountId"
+          ]
+        }
+      ],
+      "Inputs": [
+        {
+          "Name": "owner",
+          "Generator": {
+            "Kind": "oneOf",
+            "Values": [
+              "Ada",
+              "Grace",
+              "Alan"
+            ]
+          }
+        },
+        {
+          "Name": "deposit",
+          "Generator": {
+            "Kind": "decimal",
+            "Min": 0,
+            "Max": 500,
+            "Places": 2
+          }
+        },
+        {
+          "Name": "amount",
+          "Generator": {
+            "Kind": "decimal",
+            "Min": 0.01,
+            "Max": 200,
+            "Places": 2
+          }
+        },
+        {
+          "Name": "fromAccount",
+          "Generator": {
+            "Kind": "fromPool",
+            "Pool": "accounts"
+          }
+        },
+        {
+          "Name": "toAccount",
+          "Generator": {
+            "Kind": "fromPool",
+            "Pool": "accounts"
+          }
+        },
+        {
+          "Name": "accountId",
+          "Generator": {
+            "Kind": "fromPool",
+            "Pool": "accounts"
+          }
+        }
+      ],
+      "Rules": [
+        {
+          "Id": "ledger-rule-money",
+          "Name": "money is never created or destroyed",
+          "Reads": [
+            {
+              "Id": "ledger-probe-list",
+              "RequestId": "ledger-list-accounts",
+              "Name": "List accounts"
+            }
+          ],
+          "Code": "// Money only enters the ledger through deposits, so the total of all balances is what was deposited.\nconst cents = value => Math.round(value * 100)\nif (orpheus.step.action === 'Open account' && orpheus.step.response.status === 201) {\n  orpheus.model.deposited = (orpheus.model.deposited ?? 0) + cents(orpheus.step.response.data.balance)\n}\nconst accounts = orpheus.probes['List accounts'].data.items\nconst total = accounts.reduce((sum, account) => sum + cents(account.balance), 0)\norpheus.expect(total).toBe(orpheus.model.deposited ?? 0)"
+        },
+        {
+          "Id": "ledger-rule-negative",
+          "Name": "no balance is negative",
+          "Reads": [
+            {
+              "Id": "ledger-read-negative",
+              "RequestId": "ledger-list-accounts",
+              "Name": "List accounts"
+            }
+          ],
+          "Code": "for (const account of orpheus.probes['List accounts'].data.items) {\n  orpheus.expect(account.balance).not.toBeLessThan(0)\n}"
+        },
+        {
+          "Id": "ledger-rule-closed",
+          "Name": "a closed account stays empty",
+          "Reads": [
+            {
+              "Id": "ledger-read-closed",
+              "RequestId": "ledger-list-accounts",
+              "Name": "List accounts"
+            }
+          ],
+          "Code": "const closed = orpheus.probes['List accounts'].data.items.filter(account => account.status === 'closed')\nfor (const account of closed) orpheus.expect(account.balance).toBe(0)"
+        }
+      ],
+      "NoServerErrors": true,
+      "Settings": {
+        "Preset": "quick",
+        "Budget": 500,
+        "StepsPerSequence": 20
+      }
+    }
+  ],
+  "ExecutionPlans": [
+    {
+      "Id": "ledger-plan-happy-path",
+      "Name": "Happy path",
+      "Description": "Two accounts and a transfer between them. Passes even with the planted bugs on: they need inputs nobody thinks to try.",
+      "Steps": [
+        {
+          "Id": "ledger-step-reset",
+          "Enabled": true,
+          "Repeat": 1,
+          "Name": "Reset",
+          "Kind": "request",
+          "RequestId": "ledger-reset"
+        },
+        {
+          "Id": "ledger-step-open",
+          "Enabled": true,
+          "Repeat": 2,
+          "Name": "Open account",
+          "Kind": "request",
+          "RequestId": "ledger-open-account"
+        },
+        {
+          "Id": "ledger-step-transfer",
+          "Enabled": true,
+          "Repeat": 1,
+          "Name": "Transfer",
+          "Kind": "request",
+          "RequestId": "ledger-transfer"
+        },
+        {
+          "Id": "ledger-step-list",
+          "Enabled": true,
+          "Repeat": 1,
+          "Name": "List accounts",
+          "Kind": "request",
+          "RequestId": "ledger-list-accounts"
+        }
+      ],
+      "Settings": {
+        "Mode": "serial",
+        "Concurrency": 5,
+        "Iterations": 1,
+        "StopOnFirstFailure": true,
+        "DelayMs": 0
+      }
+    }
+  ]
+}
