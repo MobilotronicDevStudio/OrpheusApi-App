@@ -3,7 +3,7 @@ title: Known limitations
 description: What Orpheus does not do yet, so you know before you file an issue.
 ---
 
-Orpheus is in alpha. These are known, and most are on the list.
+Orpheus is in beta. These are known, and most are on the list.
 
 - **Credentials are stored as plain text.** Passwords, tokens and secret variables in collections and environments are written to their JSON files unencrypted. Assistant API keys are the exception: they are encrypted by your operating system.
 - **Builds are not signed.** Your system will ask you to confirm the first launch. See [Install](/OrpheusApi-App/docs/getting-started/install/#the-first-launch).

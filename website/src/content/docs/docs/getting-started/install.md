@@ -14,7 +14,7 @@ Download the installer for your system from the [releases page](https://github.c
 
 ## The first launch
 
-Orpheus is in alpha and the builds are not signed yet, so your system will ask before opening it the first time.
+Orpheus is in beta and the builds are not signed yet, so your system will ask before opening it the first time.
 
 - **Windows:** SmartScreen shows "Windows protected your PC". Choose **More info**, then **Run anyway**.
 - **macOS:** Gatekeeper says the developer cannot be verified. Right-click the app, choose **Open**, then **Open** again.
