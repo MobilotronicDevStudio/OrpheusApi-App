@@ -39,7 +39,7 @@
 - Import from Postman, OpenAPI, Swagger and cURL, and export back to Postman
 - Code snippets for cURL, fetch, axios, Python, C#, Go and Ruby
 
-Orpheus is in alpha. See the [known limitations](https://mobilotronicdevstudio.github.io/OrpheusApi-App/docs/reference/limitations/) before you rely on it.
+Orpheus is in beta. See the [known limitations](https://mobilotronicdevstudio.github.io/OrpheusApi-App/docs/reference/limitations/) before you rely on it.
 
 ## Download
 
